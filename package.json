@@ -1,6 +1,6 @@
 {
   "name": "event-artillery-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP App for generating and sending events to AWS EventBridge from any AsyncAPI spec",
   "license": "MIT",
   "type": "module",
@@ -8,7 +8,7 @@
     "node": ">=20.11.0"
   },
   "bin": {
-    "event-artillery-mcp": "./dist/main.js"
+    "event-artillery-mcp": "./bin/event-artillery-mcp.js"
   },
   "exports": {
     ".": {
@@ -17,6 +17,7 @@
     }
   },
   "files": [
+    "bin/",
     "dist/",
     "README.md"
   ],
