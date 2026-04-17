@@ -1,0 +1,21 @@
+# Source files (dist/ is what gets published)
+src/
+main.ts
+server.ts
+mcp-app.html
+
+# Config
+vite.config.ts
+tailwind.config.ts
+postcss.config.js
+tsconfig*.json
+components.json
+
+# Dev artifacts
+node_modules/
+*.log
+plan.md
+
+# CI / tooling
+.github/
+.vscode/
