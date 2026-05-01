@@ -25,7 +25,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
@@ -54,7 +54,7 @@ jobs:
 
       # ── VSIX ────────────────────────────────────────────────────────────────
       - name: Package VS Code extension
-        run: pnpm --filter event-artillery-vscode exec vsce package --no-dependencies
+        run: pnpm exec vsce package --no-dependencies
         working-directory: packages/vscode
 
       - name: Get VSIX filename
@@ -134,7 +134,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org
 
       - name: Download MCP dist artifact
