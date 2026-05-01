@@ -1,8 +1,8 @@
 /**
- * XState v5 machine for the Event Artillery MCP UI.
+ * XState v5 machine for the Event Artillery UI.
  *
  * States:
- *   idle              → Waiting for event list from MCP tool result
+ *   idle              → Waiting for event list from tool result
  *   selecting         → Event list shown, user picks an event
  *   generatingPayload → Calling generate-event-payload tool
  *   editing           → Payload editor shown; all actions available
@@ -37,7 +37,7 @@ export interface StatusMessage {
   message: string;
 }
 
-// Minimal interface for the MCP App — keeps the machine decoupled from the SDK
+// Minimal interface for the app — keeps the machine decoupled from any SDK
 export interface McpApp {
   callServerTool(args: { name: string; arguments: Record<string, unknown> }): Promise<{
     structuredContent: unknown;

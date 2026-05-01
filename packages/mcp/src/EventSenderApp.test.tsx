@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MachineSnapshot } from "xstate";
 
 import type { App } from "@modelcontextprotocol/ext-apps";
+import type { MachineContext, MachineEvent } from "@event-artillery/core/machine";
 
 // ---------------------------------------------------------------------------
 // Module mocks — declared before any imports that consume them
@@ -29,8 +30,6 @@ vi.mock("./global.css", () => ({}));
 import { useApp } from "@modelcontextprotocol/ext-apps/react";
 import { useMachine } from "@xstate/react";
 import { EventSenderApp, EventSenderMachine } from "./EventSenderApp.js";
-import type { MachineContext, MachineEvent } from "./machine.js";
-import packageJson from "../package.json";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -78,13 +77,13 @@ function makeFakeApp(): App {
 const mockEvent = {
   name: "order.created",
   description: "An order was created",
-  version: packageJson.version,
+  version: "1.0.1",
 };
 
 const mockSelectedEvent = {
   name: "order.created",
   description: "An order was created",
-  version: packageJson.version,
+  version: "1.0.1",
 };
 
 beforeEach(() => {
@@ -245,7 +244,6 @@ describe("editing state", () => {
   it("sends BACK when the back button is clicked", async () => {
     const user = userEvent.setup();
     renderMachine("editing", editingCtx);
-    // The back button is the ghost icon button — find by accessible label or role
     const buttons = screen.getAllByRole("button");
     const backBtn = buttons.find((b) => b.querySelector("svg")) as HTMLElement;
     await user.click(backBtn);
@@ -410,7 +408,6 @@ describe("loadingExample state", () => {
       jsonText: "{}",
       savedExamples: [],
     });
-    // Textarea should not be present
     expect(screen.queryByRole("textbox", { name: /event payload/i })).not.toBeInTheDocument();
   });
 

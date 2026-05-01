@@ -4,8 +4,8 @@
  * Entry point for the Event Artillery MCP server.
  *
  * Run with:
- *   npx tsx main.ts          # stdio mode (default, for MCP client integration)
- *   npx tsx main.ts --http   # HTTP mode (binds 127.0.0.1:${PORT:-3001})
+ *   npx tsx server/main.ts          # stdio mode (default, for MCP client integration)
+ *   npx tsx server/main.ts --http   # HTTP mode (binds 127.0.0.1:${PORT:-3001})
  *
  * Environment variables:
  *   EVENTS_YAML_PATH  Path to your AsyncAPI events.yaml (default: ./events.yaml)

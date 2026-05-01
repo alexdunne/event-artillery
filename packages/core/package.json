@@ -1,0 +1,37 @@
+{
+  "name": "@event-artillery/core",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Core logic for Event Artillery — AsyncAPI parsing, payload generation, EventBridge sending, example management",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./machine": {
+      "import": "./dist/machine.js",
+      "types": "./dist/machine.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
+    "check-types": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@asyncapi/parser": "^3.6.0",
+    "@aws-sdk/client-eventbridge": "^3.600.0",
+    "@aws-sdk/credential-provider-ini": "^3.972.29",
+    "uuid": "^10.0.0",
+    "xstate": "^5.30.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.4"
+  }
+}

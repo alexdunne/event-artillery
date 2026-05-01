@@ -3,7 +3,8 @@ import { useApp } from "@modelcontextprotocol/ext-apps/react";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { useEffect, useMemo } from "react";
 import { useMachine } from "@xstate/react";
-import packageJson from "../package.json";
+
+import { eventSenderMachine, type EventInfo, type McpApp } from "@event-artillery/core/machine";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,14 +38,12 @@ import {
   XCircle,
 } from "lucide-react";
 
-import { eventSenderMachine, type EventInfo, type McpApp } from "./machine.js";
-
 // ---------------------------------------------------------------------------
 // Root app — waits for MCP connection before starting the machine
 // ---------------------------------------------------------------------------
 export function EventSenderApp() {
   const { app, error } = useApp({
-    appInfo: { name: "Event Artillery MCP", version: packageJson.version },
+    appInfo: { name: "Event Artillery MCP", version: "1.0.1" },
     capabilities: {},
     onAppCreated: (createdApp: App) => {
       createdApp.ontoolinput = async () => {};

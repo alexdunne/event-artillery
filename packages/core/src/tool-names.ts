@@ -1,6 +1,6 @@
 /**
- * Shared tool name constants used by both the MCP server (server.ts)
- * and the UI (src/mcp-app.tsx) to prevent silent mismatches on rename.
+ * Shared tool name constants used by both the server and UI
+ * to prevent silent mismatches on rename.
  */
 export const TOOL_NAMES = {
   SEND_EVENT: "send-event",

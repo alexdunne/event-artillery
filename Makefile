@@ -1,29 +1,27 @@
-.PHONY: help install test build ci publish-public publish-public-dry-run
-
-NPM ?= npm
+.PHONY: help install test build check-types clean ci
 
 help:
 	@printf "Available targets:\n"
-	@printf "  make install                Install dependencies with npm ci\n"
-	@printf "  make test                   Run the test suite\n"
-	@printf "  make build                  Build production artifacts\n"
-	@printf "  make ci                     Run the local CI pipeline (install, test, build)\n"
-	@printf "  make publish-public-dry-run Run the local CI pipeline and preview the npm publish\n"
-	@printf "  make publish-public         Run the local CI pipeline and publish to npm publicly\n"
+	@printf "  make install       Install dependencies with pnpm\n"
+	@printf "  make build         Build all packages (via Turborepo)\n"
+	@printf "  make test          Run the test suite across all packages\n"
+	@printf "  make check-types   Type-check all packages\n"
+	@printf "  make clean         Remove all build artifacts\n"
+	@printf "  make ci            Run the local CI pipeline (install, check-types, test, build)\n"
 
 install:
-	$(NPM) ci
-
-test:
-	$(NPM) test
+	pnpm install
 
 build:
-	$(NPM) run build
+	pnpm run build
 
-ci: install test build
+test:
+	pnpm run test
 
-publish-public-dry-run: ci
-	$(NPM) publish --access public --dry-run
+check-types:
+	pnpm run check-types
 
-publish-public: ci
-	$(NPM) publish --access public
+clean:
+	pnpm run clean
+
+ci: install check-types test build

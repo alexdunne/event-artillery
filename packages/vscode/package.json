@@ -1,0 +1,176 @@
+{
+  "name": "event-artillery-vscode",
+  "displayName": "Event Artillery",
+  "description": "Generate and send events to AWS EventBridge from any AsyncAPI spec — right from VS Code",
+  "version": "0.1.0",
+  "private": true,
+  "publisher": "event-artillery",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "event-artillery-payload",
+        "aliases": ["Event Artillery Payload"],
+        "extensions": []
+      }
+    ],
+    "commands": [
+      {
+        "command": "eventArtillery.sendEvent",
+        "title": "Event Artillery: Send Event",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "eventArtillery.sendCurrentPayload",
+        "title": "Send to EventBridge",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "eventArtillery.refreshEvents",
+        "title": "Event Artillery: Refresh Events",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "eventArtillery.checkAwsAuth",
+        "title": "Event Artillery: Check AWS Credentials",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "eventArtillery.loadExample",
+        "title": "Event Artillery: Load Saved Example",
+        "icon": "$(file-symlink-file)"
+      },
+      {
+        "command": "eventArtillery.saveExample",
+        "title": "Event Artillery: Save Current Payload as Example",
+        "icon": "$(save)"
+      },
+      {
+        "command": "eventArtillery.switchProfile",
+        "title": "Event Artillery: Switch AWS Profile",
+        "icon": "$(account)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "event-artillery",
+          "title": "Event Artillery",
+          "icon": "$(zap)"
+        }
+      ]
+    },
+    "views": {
+      "event-artillery": [
+        {
+          "id": "eventArtillery.auth",
+          "name": "AWS Credentials"
+        },
+        {
+          "id": "eventArtillery.events",
+          "name": "Events"
+        },
+        {
+          "id": "eventArtillery.examples",
+          "name": "Saved Examples"
+        }
+      ]
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "eventArtillery.sendCurrentPayload",
+          "when": "eventArtillery.isPayloadEditor",
+          "group": "navigation"
+        },
+        {
+          "command": "eventArtillery.saveExample",
+          "when": "eventArtillery.isPayloadEditor",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "eventArtillery.switchProfile",
+          "when": "view == eventArtillery.auth",
+          "group": "navigation"
+        },
+        {
+          "command": "eventArtillery.checkAwsAuth",
+          "when": "view == eventArtillery.auth",
+          "group": "navigation"
+        },
+        {
+          "command": "eventArtillery.refreshEvents",
+          "when": "view == eventArtillery.events",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": []
+    },
+    "configuration": {
+      "title": "Event Artillery",
+      "properties": {
+        "eventArtillery.eventsYamlPath": {
+          "type": "string",
+          "default": "events.yaml",
+          "description": "Path to your AsyncAPI events.yaml (relative to workspace root or absolute)"
+        },
+        "eventArtillery.examplesDir": {
+          "type": "string",
+          "default": "examples",
+          "description": "Directory for saved example payloads (relative to workspace root or absolute)"
+        },
+        "eventArtillery.eventBusName": {
+          "type": "string",
+          "default": "my-event-bus",
+          "description": "AWS EventBridge bus name"
+        },
+        "eventArtillery.eventSource": {
+          "type": "string",
+          "default": "event-artillery",
+          "description": "AWS EventBridge source field"
+        },
+        "eventArtillery.awsRegion": {
+          "type": "string",
+          "default": "us-east-1",
+          "description": "AWS region for EventBridge"
+        },
+        "eventArtillery.awsProfile": {
+          "type": "string",
+          "default": "",
+          "description": "AWS shared credentials profile (leave empty for default credentials chain)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node20 --main-fields=module,main",
+    "watch": "pnpm run build --watch",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "package": "pnpm run build && pnpm exec vsce package --no-dependencies",
+    "test": "echo 'No tests yet'"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sts": "^3.1040.0",
+    "@aws-sdk/credential-provider-node": "^3.972.38",
+    "@event-artillery/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.90.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  }
+}

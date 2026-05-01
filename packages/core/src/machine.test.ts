@@ -194,7 +194,6 @@ describe("generatingPayload", () => {
 // ---------------------------------------------------------------------------
 describe("editing", () => {
   it("SEND clears status before invoking sendEvent", async () => {
-    // Verify that triggering SEND resets any prior status to null
     const machine = eventSenderMachine.provide({
       actors: {
         generatePayload: fromPromise<GeneratePayloadResult, { app: McpApp; eventName: string }>(async () => ({
@@ -245,7 +244,6 @@ describe("editing", () => {
 
   it("SEND with valid JSON transitions to sending", async () => {
     const actor = await startInEditing();
-    // jsonText is already valid from generatePayload
     actor.send({ type: "SEND" });
     expect(actor.getSnapshot().value).toBe("sending");
   });
@@ -356,11 +354,9 @@ describe("sending", () => {
 describe("saving", () => {
   it("resets saveFileName to empty string on entry", async () => {
     const actor = await startInEditing();
-    // Manually set saveFileName first to prove entry resets it
     actor.send({ type: "OPEN_SAVE_DIALOG" });
     actor.send({ type: "SAVE_FILENAME_CHANGE", value: "old-name" });
     actor.send({ type: "CLOSE_SAVE_DIALOG" });
-    // Re-open — entry should clear it
     actor.send({ type: "OPEN_SAVE_DIALOG" });
     expect(actor.getSnapshot().context.saveFileName).toBe("");
   });
@@ -390,7 +386,7 @@ describe("saving", () => {
   it("SAVE_CONFIRM with empty filename stays in saving and sets jsonError", async () => {
     const actor = await startInEditing();
     actor.send({ type: "OPEN_SAVE_DIALOG" });
-    actor.send({ type: "SAVE_CONFIRM" }); // saveFileName is "" from entry reset
+    actor.send({ type: "SAVE_CONFIRM" });
     const snap = actor.getSnapshot();
     expect(snap.value).toBe("saving");
     expect(snap.context.jsonError).toBe("Invalid JSON or missing filename");

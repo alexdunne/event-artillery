@@ -46,7 +46,7 @@ describe("server configuration", () => {
       { uri: `file://${rootB}`, name: "b" },
     ];
 
-    const { createServer } = await import("../server.js");
+    const { createServer } = await import("./server.js");
     const server = createServer();
     vi.spyOn(server.server, "listRoots").mockResolvedValue({ roots });
 
@@ -67,7 +67,7 @@ describe("server configuration", () => {
       "utf8",
     );
 
-    const { createServer } = await import("../server.js");
+    const { createServer } = await import("./server.js");
     const server = createServer();
     vi.spyOn(server.server, "listRoots").mockResolvedValue({ roots: [] });
 

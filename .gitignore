@@ -3,7 +3,7 @@ node_modules/
 
 # Build output
 dist/
-bin/
+*.tsbuildinfo
 
 # Environment variables
 .env
@@ -16,14 +16,12 @@ bin/
 # Editor
 .vscode/
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
 
 # Logs
 *.log
-npm-debug.log*
 
-# TypeScript
-*.tsbuildinfo
+# Turborepo
+.turbo/
+
+# VS Code extension packaging
+*.vsix
