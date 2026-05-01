@@ -1,0 +1,157 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  # ── Shared build ────────────────────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    outputs:
+      mcp_version: ${{ steps.mcp_version.outputs.value }}
+      mcp_published: ${{ steps.check_npm.outputs.published }}
+      vsix_name: ${{ steps.vsix_name.outputs.value }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm run build
+
+      # ── MCP version ──────────────────────────────────────────────────────────
+      - name: Read MCP version
+        id: mcp_version
+        run: |
+          VERSION=$(node -p "require('./packages/mcp/package.json').version")
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check if MCP version already published
+        id: check_npm
+        run: |
+          VERSION="${{ steps.mcp_version.outputs.value }}"
+          if npm view "event-artillery-mcp@$VERSION" version &>/dev/null; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── VSIX ────────────────────────────────────────────────────────────────
+      - name: Package VS Code extension
+        run: pnpm --filter event-artillery-vscode exec vsce package --no-dependencies
+        working-directory: packages/vscode
+
+      - name: Get VSIX filename
+        id: vsix_name
+        run: |
+          VSIX=$(ls packages/vscode/*.vsix | head -1)
+          echo "value=$VSIX" >> "$GITHUB_OUTPUT"
+
+      # ── Upload artifacts for downstream jobs ────────────────────────────────
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: ${{ steps.vsix_name.outputs.value }}
+          retention-days: 7
+
+      - name: Upload MCP dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-dist
+          path: packages/mcp/dist/
+          retention-days: 7
+
+  # ── GitHub Release (VSIX) ───────────────────────────────────────────────────
+  release-vsix:
+    name: Release VSIX
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download VSIX artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vsix
+          path: dist/
+
+      - name: Read VS Code extension version
+        id: vscode_version
+        run: |
+          VERSION=$(node -p "require('./packages/vscode/package.json').version")
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update GitHub Release for VS Code extension
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: vscode-v${{ steps.vscode_version.outputs.value }}
+          name: "VS Code Extension v${{ steps.vscode_version.outputs.value }}"
+          body: |
+            ## Install
+
+            Download the `.vsix` file below and install it in VS Code:
+
+            ```
+            code --install-extension event-artillery-vscode-${{ steps.vscode_version.outputs.value }}.vsix
+            ```
+
+            Or: **Extensions: Install from VSIX...** in the command palette.
+          files: dist/*.vsix
+          make_latest: false
+
+  # ── npm publish (MCP) ───────────────────────────────────────────────────────
+  publish-mcp:
+    name: Publish MCP to npm
+    needs: build
+    if: needs.build.outputs.mcp_published == 'false'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Download MCP dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mcp-dist
+          path: packages/mcp/dist/
+
+      - name: Publish event-artillery-mcp to npm
+        run: pnpm publish --filter event-artillery-mcp --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release for MCP
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: mcp-v${{ needs.build.outputs.mcp_version }}
+          name: "MCP Server v${{ needs.build.outputs.mcp_version }}"
+          body: |
+            Published to npm: https://www.npmjs.com/package/event-artillery-mcp/v/${{ needs.build.outputs.mcp_version }}
+          make_latest: true

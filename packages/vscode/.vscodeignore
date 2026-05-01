@@ -1,0 +1,13 @@
+# Source and config files not needed at runtime
+src/
+tsconfig.json
+*.ts
+!dist/**
+
+# Monorepo / build tooling
+node_modules/
+.turbo/
+*.tgz
+
+# Misc
+.DS_Store

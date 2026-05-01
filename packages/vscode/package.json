@@ -6,6 +6,10 @@
   "private": true,
   "publisher": "event-artillery",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexdunne/event-artillery"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -20,7 +24,9 @@
     "languages": [
       {
         "id": "event-artillery-payload",
-        "aliases": ["Event Artillery Payload"],
+        "aliases": [
+          "Event Artillery Payload"
+        ],
         "extensions": []
       }
     ],
@@ -170,6 +176,7 @@
   "devDependencies": {
     "@types/node": "^22.10.0",
     "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.9.1",
     "esbuild": "^0.25.0",
     "typescript": "^5.7.0"
   }
