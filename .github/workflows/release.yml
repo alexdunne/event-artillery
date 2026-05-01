@@ -126,6 +126,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write   # required for npm OIDC Trusted Publishing
     steps:
       - uses: actions/checkout@v4
 
@@ -143,9 +144,7 @@ jobs:
           path: packages/mcp/dist/
 
       - name: Publish event-artillery-mcp to npm
-        run: pnpm publish --filter event-artillery-mcp --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --filter event-artillery-mcp --no-git-checks --access public --provenance
 
       - name: Create GitHub Release for MCP
         uses: softprops/action-gh-release@v2
